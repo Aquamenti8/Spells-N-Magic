@@ -17,20 +17,11 @@ public class Magic_circles_behavior : MonoBehaviour
     public int _current_index;
 
 
-    //
-    //
-    //              FAIRE QUE CA SOIT DEPENDANT D'UN DICTIONNAIRE! LA CLEF EST LE CODENAME, AVEC LE CODENAME, JE VEUX L'ARCANE QUI ME DONNERA TOUT LE RESTE (material, arcane_level)
-    //              AJOUTER L'EXCEPETION: PAS D'ANIM NI RIEN SI C'EST UN NEUTRAL
-    //
 
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! ANIMATIONS POUR LES CERCLES MAGIQUES!!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
 

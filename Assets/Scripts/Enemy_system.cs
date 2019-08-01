@@ -4,14 +4,7 @@ using UnityEngine;
 
 public class Enemy_system : MonoBehaviour {
 
-    // ENEMY 
 
-    // creer un dictionnaire d'ennemis, qui a un nom donne un objet de class enemy
-    // creer un array, chercher dans le dictionnaire 3 monstres a y mettre ( toujours en class enemy)
-    // X creer des instances d'objets, les initialiser grace a la classe d'objet
-    // X les placer dans la scene, aux positions necessaires celon si ya 1,2,3 enemis
-
-    // Use this for initialization
 
     public GameObject enemyPrefab;
 
@@ -24,31 +17,77 @@ public class Enemy_system : MonoBehaviour {
 
     public List<GameObject> List_target;
 
+    public int dungeon_room;
+    public Enemy[][] Dungeon;
+
+    // UI
+    public GameObject Menu_battleend;
+    public GameObject Menu_Leveling;
+    public GameObject Menu_NextRoom;
+
+
 
     void Start () {
 
-
-        Dictionary<string, Enemy> Dico_enemy = new Dictionary<string, Enemy>();
-
-        Enemy Box1 = new Enemy("Boxter", 10, 1, 2, 2);
-        Enemy Box2 = new Enemy("Boxtosor", 15, 2, 3, 2.5f);
-
-        Dico_enemy.Add("Boxter", Box1);
-        Dico_enemy.Add("Boxtosor", Box2);
-
-        Enemy[] enemy_group1 = { Box1 };
-        Enemy[] enemy_group2 = { Box2, Box1 };
-        Enemy[] enemy_group3 = { Box1, Box1, Box1 };
+        Dungeon = GameObject.Find("Dungeon_system").GetComponent<Dungeon_system>().current_dungeon;
+        Enemy[] enemy_group = Dungeon[0];
 
         // Debut Combat
-        Instanciate_Enemy(enemy_group3);
+        Instanciate_Enemy(enemy_group);
     }
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
 
+
+        // Tous les ennemis sont morts
+        if(List_target.Count == 0)
+        {
+            Menu_battleend.SetActive(true);
+            Menu_Leveling.SetActive(true);
+        }
+
+        if(Menu_NextRoom.activeSelf == true)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Menu_NextRoom.SetActive(false);
+                Menu_battleend.SetActive(false);
+
+
+                dungeon_room += 1;
+                int _lenght = Dungeon.Length;
+                if (dungeon_room < Dungeon.Length)
+                {
+                    ChargeDungeonRoom(Dungeon[dungeon_room]);
+                }
+                else Application.Quit();
+
+            }
+        }
+        if (Menu_Leveling.activeSelf == true)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Menu_NextRoom.SetActive(true);
+                Menu_Leveling.SetActive(false);
+            }
+        }
+
+    }
+
+    public void ChargeDungeonRoom(Enemy[] room)
+    {
+        Instanciate_Enemy(room);
+    }
+
+    public void AssignTargetIndex()
+    {
+        for (int i = 0; i < List_target.Count; i++)
+        {
+            List_target[i].GetComponent<Enemy_behavior>().Target_index = i;
+        }
+    }
 
     void Instanciate_Enemy(Enemy[] array)
     {

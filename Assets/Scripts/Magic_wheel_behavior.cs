@@ -27,6 +27,11 @@ public class Magic_wheel_behavior : MonoBehaviour {
     public string codename_X;
     public string codename_O;
 
+    public float shield_V;
+    public float shield_U;
+    public float shield_X;
+    public float shield_O;
+
     Color color_V =Color.black;
     Color color_X= Color.black;
     Color color_O = Color.black;
@@ -34,6 +39,11 @@ public class Magic_wheel_behavior : MonoBehaviour {
 
     public string charged_skill = "";
 
+    public int target_index;
+
+    public float shield_value_1;
+    public float shield_value_2;
+    public float shield_value_3;
 
     //UI VARIABLES
     public GameObject fill_V;
@@ -53,6 +63,10 @@ public class Magic_wheel_behavior : MonoBehaviour {
     public GameObject dot_X;
     public GameObject dot_O;
 
+    public GameObject shl1;
+    public GameObject shl2;
+    public GameObject shl3;
+
     // Use this for initialization
     void Start () {
         Get_arcanes("Wheel_000");
@@ -64,11 +78,11 @@ public class Magic_wheel_behavior : MonoBehaviour {
         InputReact();
 
         Interface_charge();
-
-        
-
     }
 
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! INPUT REACT !!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
 
     void InputReact()
     {
@@ -106,8 +120,7 @@ public class Magic_wheel_behavior : MonoBehaviour {
         {
             LaunchSkill(charged_skill);
             if (charged_skill != "")
-            {
-                
+            {    
                 charged_skill = "";
             }
 
@@ -167,17 +180,64 @@ public class Magic_wheel_behavior : MonoBehaviour {
         {
             if (charge_value_X != 0) charge_value_X = 0;
         }
-
-        if (charge_value_X >= charge_max_X)
+        // ----------------------------------------------------------------------------------------------------------
+        // !!!!!!!!! SHIELD CHARGE SYSTEM !!!!!!!!!
+        // ----------------------------------------------------------------------------------------------------------
+        if (charge_V || charge_O || charge_U || charge_X)
         {
-            charged_skill = codename_X;
-            charge_value_X = charge_max_X;
-            charged = true;
-        }
-        if (charge_value_U >= charge_max_U) { charged_skill = codename_U; charge_value_U = charge_max_U; charged = true; }
-        if (charge_value_O >= charge_max_O) { charged_skill = codename_O; charge_value_O = charge_max_O; charged = true; }
-        if (charge_value_V >= charge_max_V) { charged_skill = codename_V; charge_value_V = charge_max_V; charged = true; }
+            Magic_circles_behavior circle = GameObject.Find("MagicWheel").GetComponent<Magic_circles_behavior>();
+            float _shield_value = 0f;
 
+            switch (circle.arcane_level)
+            {
+                case 0: _shield_value = shield_value_1; break;
+                case 1: _shield_value = shield_value_2; break;
+                case 2: _shield_value = shield_value_3; break;
+                default: Debug.Log("Shield arcane error"); break;
+            }
+
+            if (charge_V) { _shield_value += shield_V *( Time.deltaTime /charge_max_V)*0.8f; }
+            else if (charge_X) { _shield_value += shield_X * (Time.deltaTime /charge_max_X) * 0.8f; }
+            else if (charge_U) { _shield_value += shield_U * (Time.deltaTime /charge_max_U) * 0.8f; }
+            else { _shield_value += shield_O * (Time.deltaTime /charge_max_O) * 0.8f; }
+           
+
+            switch (circle.arcane_level)
+            {
+                case 0: shield_value_1 = _shield_value; break;
+                case 1: shield_value_2 = _shield_value; break;
+                case 2: shield_value_3 = _shield_value; break;
+                default: Debug.Log("Shield arcane error"); break;
+            }
+        }
+
+        // ----------------------------------------------------------------------------------------------------------
+        // !!!!!!!!! CHARGE DONE!!!!!!!!!
+        // ----------------------------------------------------------------------------------------------------------
+        if (!charged)
+        {
+            if ((charge_value_X >= charge_max_X) || (charge_value_U >= charge_max_U) || (charge_value_O >= charge_max_O) || (charge_value_V >= charge_max_V))
+            {
+
+                float _shield_value = 0;
+                if (charge_value_X >= charge_max_X) { charged_skill = codename_X; charge_value_X = charge_max_X; charged = true; _shield_value = shield_X; }
+                if (charge_value_U >= charge_max_U) { charged_skill = codename_U; charge_value_U = charge_max_U; charged = true; _shield_value = shield_U; }
+                if (charge_value_O >= charge_max_O) { charged_skill = codename_O; charge_value_O = charge_max_O; charged = true; _shield_value = shield_O; }
+                if (charge_value_V >= charge_max_V) { charged_skill = codename_V; charge_value_V = charge_max_V; charged = true; _shield_value = shield_V; }
+
+                Magic_circles_behavior circle = GameObject.Find("MagicWheel").GetComponent<Magic_circles_behavior>();
+                switch (circle.arcane_level)
+                {
+                    case 0: shield_value_1 = _shield_value; break;
+                    case 1: shield_value_2 = _shield_value; break;
+                    case 2: shield_value_3 = _shield_value; break;
+                    default: Debug.Log("Shield arcane error"); break;
+                }
+
+            }
+        }
+
+        // CHANGE WHEEL
         if (charged)
         {
             string new_wheel = "";
@@ -191,10 +251,38 @@ public class Magic_wheel_behavior : MonoBehaviour {
             charged = false;
         }
 
+        // CHANGE TARGET ENEMY
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            int _count = GameObject.Find("Enemies").GetComponent<Enemy_system>().List_target.Count;
+            if(target_index -1 < 0)
+            {
+                target_index = _count - 1;
+            }
+            else target_index -= 1;
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            int _count = GameObject.Find("Enemies").GetComponent<Enemy_system>().List_target.Count;
+            if (target_index + 1 >= _count) target_index = 0;
+            else target_index += 1;
+        }
+
+
+
     }
+
+
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! LAUNCH ARCANE !!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
+
     void LaunchSkill(string codename)
     {
         Debug.Log("SKILL FIRED : " + codename);
+        Arcane.LaunchArcane(codename);
+
         Get_arcanes("Wheel_000");
 
         charge_V = false;
@@ -202,7 +290,16 @@ public class Magic_wheel_behavior : MonoBehaviour {
         charge_O = false;
         charge_X = false;
 
+        shield_value_1 = 0;
+        shield_value_2 = 0;
+        shield_value_3 = 0;
+
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! UI Update d'interface !!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
+
     void Interface_charge()
     {
         if (charge_max_V != 0)
@@ -265,7 +362,26 @@ public class Magic_wheel_behavior : MonoBehaviour {
         text_X.GetComponent<Text>().text = codename_X;
 
         Arcane_name.GetComponent<Text>().text = charged_skill;
+
+
+        // SHIELD UI
+        shl1.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(shield_value_1*5, 20);
+        shl1.transform.GetChild(1).GetComponent<Text>().text = "+ "+Mathf.Round(shield_value_1);
+
+        shl2.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(shield_value_2*5, 20);
+        shl2.transform.GetChild(1).GetComponent<Text>().text = "+ " + Mathf.Round(shield_value_2);
+
+        shl3.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(shield_value_3*5, 20);
+        shl3.transform.GetChild(1).GetComponent<Text>().text = "+ " + Mathf.Round(shield_value_3);
+
+        if (shield_value_1 == 0) shl1.transform.GetChild(1).GetComponent<Text>().text = "";
+        if (shield_value_2 == 0) shl2.transform.GetChild(1).GetComponent<Text>().text = "";
+        if (shield_value_3 == 0) shl3.transform.GetChild(1).GetComponent<Text>().text = "";
     }
+
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! SELECTION DE L'ARCANE SUIVANTE !!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
 
     void Get_arcanes(string new_wheel)
     {
@@ -303,5 +419,32 @@ public class Magic_wheel_behavior : MonoBehaviour {
         color_X = Grimoire.Magic_Wheel[2].color;
         color_U = Grimoire.Magic_Wheel[3].color;
 
+        shield_V = Grimoire.Magic_Wheel[0].shield;
+        shield_O = Grimoire.Magic_Wheel[1].shield;
+        shield_X = Grimoire.Magic_Wheel[2].shield;
+        shield_U = Grimoire.Magic_Wheel[3].shield;
+
+
+    }
+
+    public void break_magic()
+    {
+        Debug.Log("SKILL BROKE " );
+
+        Get_arcanes("Wheel_000");
+
+        charge_V = false;
+        charge_U = false;
+        charge_O = false;
+        charge_X = false;
+
+        shield_value_1 = 0;
+        shield_value_2 = 0;
+        shield_value_3 = 0;
+
+        if (charged_skill != "")
+        {
+            charged_skill = "";
+        }
     }
 }

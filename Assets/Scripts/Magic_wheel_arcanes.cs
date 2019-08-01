@@ -5,20 +5,19 @@ using UnityEngine;
 
 public class Magic_wheel_arcanes : MonoBehaviour {
 
+    // ----------------------------------------------------------------------------------------------------------
+    // !!!!!!!!! LISTE DES ARCANES, des wheel !!!!!!!!!
+    // ----------------------------------------------------------------------------------------------------------
 
-    public Arcane neutral = new Arcane("neutral", Color.grey, 1f, 0);
-    /*
-    public Arcane Fire_Rune = new Arcane("Fire Rune", Color.red, 2f, 0);
-    public Arcane Water_Rune = new Arcane("Water Rune", Color.red, 2f, 0);
-    public Arcane Wind_Rune = new Arcane("Wind Rune", Color.red, 1f, 0);
-    public Arcane Earth_Rune = new Arcane("Earth Rune", Color.red, 2f, 0);
-    */
-    public Arcane Fire_Rune = new Arcane("Fire Rune", new Color(1,0.28f,0.28f), 2f, 0);
-    public Arcane Water_Rune = new Arcane("Water Rune", new Color(0.32f,0.85f,1), 2f, 0);
-    public Arcane Wind_Rune = new Arcane("Wind Rune", new Color(0.86f, 0.5f, 0.9f), 1f, 0);
-    public Arcane Earth_Rune = new Arcane("Earth Rune", new Color(0.73f, 1, 0.28f), 2f, 0);
+        // NAME COLOR COEF LEVEL SHIELD
+    public Arcane neutral = new Arcane("neutral", Color.grey, 1f, 0,10);
+
+    public Arcane Fire_Rune = new Arcane("Fire Rune", new Color(1,0.28f,0.28f), 2f, 0, 15);
+    public Arcane Water_Rune = new Arcane("Water Rune", new Color(0.32f,0.85f,1), 2f, 0, 30);
+    public Arcane Wind_Rune = new Arcane("Wind Rune", new Color(0.86f, 0.5f, 0.9f), 1f, 0, 10);
+    public Arcane Earth_Rune = new Arcane("Earth Rune", new Color(0.73f, 1, 0.28f), 2f, 0, 35);
     
-    public Arcane Fire_Ball = new Arcane("Fire Ball", Color.red, 1.5f, 0);
+    public Arcane Fire_Ball = new Arcane("Fire Ball", Color.red, 1.5f, 1, 20);
 
     public Arcane[] Magic_Wheel;
     public Arcane[] Wheel_000;
