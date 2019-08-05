@@ -58,9 +58,15 @@ public class Arcane : IComparable<Arcane> {
             case "Earth Rune":
                 _power = 5;
                 _element = "earth";
-            
                 break;
-            default: Debug.Log("LaunchArcane(), name not found"); break;
+
+            case "Fire Ball":
+                _power = 8;
+                _element = "fire";
+                break;
+
+               
+            default: Debug.Log("LaunchArcane(), name not found" + "  found name: " + name); break;
 
         }
 
